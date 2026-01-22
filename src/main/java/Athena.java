@@ -14,7 +14,7 @@ public class Athena {
 
         System.out.println(intro);
 
-        ArrayList<String> inputs = new ArrayList<>();
+        ArrayList<Task> inputs = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
 
@@ -26,17 +26,43 @@ public class Athena {
             }
 
             if (input.equals("list")) {
-                String output = "____________________________________________________________\n";
+                String output = "____________________________________________________________\n" +
+                        "Here are the tasks in your list:\n";
 
                 for (int i = 0; i < inputs.size(); i++) {
-                    output += (i + 1) + ". " + inputs.get(i) + "\n";
+                    output += (i + 1) + "." + inputs.get(i) + "\n";
                 }
 
                 output += "____________________________________________________________\n";
 
                 System.out.println(output);
+
+            } else if (input.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(input.substring(5)) - 1;
+                Task task = inputs.get(taskNumber);
+                task.markAsDone();
+
+                String output = "____________________________________________________________\n" +
+                        "Nice! I've marked this task as done:\n" +
+                        task + "\n" +
+                        "____________________________________________________________\n";
+
+                System.out.println(output);
+
+            } else if (input.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(input.substring(7)) - 1;
+                Task task = inputs.get(taskNumber);
+                task.markAsNotDone();
+
+                String output = "____________________________________________________________\n" +
+                        "OK, I've marked this task as not done yet:\n" +
+                        task + "\n" +
+                        "____________________________________________________________\n";
+
+                System.out.println(output);
+
             } else {
-                inputs.add(input);
+                inputs.add(new Task(input));
 
                 String output = "____________________________________________________________\n" +
                         "added: " + input + "\n" +
