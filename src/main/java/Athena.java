@@ -21,99 +21,112 @@ public class Athena {
         while (true) {
             String input = scanner.nextLine();
 
-            if (input.equals("bye")) {
-                break;
-            }
-
-            if (input.equals("list")) {
-                String output = "____________________________________________________________\n" +
-                        "Here are the tasks in your list:\n";
-
-                for (int i = 0; i < inputs.size(); i++) {
-                    output += (i + 1) + "." + inputs.get(i) + "\n";
+            try {
+                if (input.trim().isEmpty()) {
+                    throw new AthenaException("Please enter a command.");
                 }
 
-                output += "____________________________________________________________\n";
+                if (input.equals("bye")) {
+                    break;
+                }
 
-                System.out.println(output);
+                if (input.equals("list")) {
+                    String output = "____________________________________________________________\n" +
+                            "Here are the tasks in your list:\n";
 
-            } else if (input.startsWith("mark ")) {
-                int taskNumber = Integer.parseInt(input.substring(5)) - 1;
-                Task task = inputs.get(taskNumber);
-                task.markAsDone();
+                    for (int i = 0; i < inputs.size(); i++) {
+                        output += (i + 1) + "." + inputs.get(i) + "\n";
+                    }
 
-                String output = "____________________________________________________________\n" +
-                        "Nice! I've marked this task as done:\n" +
-                        task + "\n" +
-                        "____________________________________________________________\n";
+                    output += "____________________________________________________________\n";
 
-                System.out.println(output);
+                    System.out.println(output);
 
-            } else if (input.startsWith("unmark ")) {
-                int taskNumber = Integer.parseInt(input.substring(7)) - 1;
-                Task task = inputs.get(taskNumber);
-                task.markAsNotDone();
+                } else if (input.startsWith("mark ")) {
+                    int taskNumber = Integer.parseInt(input.substring(5)) - 1;
+                    Task task = inputs.get(taskNumber);
+                    task.markAsDone();
 
-                String output = "____________________________________________________________\n" +
-                        "OK, I've marked this task as not done yet:\n" +
-                        task + "\n" +
-                        "____________________________________________________________\n";
+                    String output = "____________________________________________________________\n" +
+                            "Nice! I've marked this task as done:\n" +
+                            task + "\n" +
+                            "____________________________________________________________\n";
 
-                System.out.println(output);
+                    System.out.println(output);
 
-            } else if (input.startsWith("todo ")) {
-                String desc = input.substring(5);
-                Task task = new Todo(desc);
-                inputs.add(task);
+                } else if (input.startsWith("unmark ")) {
+                    int taskNumber = Integer.parseInt(input.substring(7)) - 1;
+                    Task task = inputs.get(taskNumber);
+                    task.markAsNotDone();
 
-                String output = "____________________________________________________________\n" +
-                        "Got it. I've added this task:\n" +
-                        "  " + task + "\n" +
-                        "Now you have " + inputs.size() + " tasks in the list.\n" +
-                        "____________________________________________________________\n";
+                    String output = "____________________________________________________________\n" +
+                            "OK, I've marked this task as not done yet:\n" +
+                            task + "\n" +
+                            "____________________________________________________________\n";
 
-                System.out.println(output);
+                    System.out.println(output);
 
-            } else if (input.startsWith("deadline ")) {
-                int idx = input.indexOf(" /by ");
-                String desc = input.substring(9, idx);
-                String by = input.substring(idx + 5);
-                Task task = new Deadline(desc, by);
-                inputs.add(task);
+                } else if (input.startsWith("todo")) {
+                    if (input.length() <= 5) {
+                        throw new AthenaException("The description of a todo cannot be empty.");
+                    }
 
-                String output = "____________________________________________________________\n" +
-                        "Got it. I've added this task:\n" +
-                        "  " + task + "\n" +
-                        "Now you have " + inputs.size() + " tasks in the list.\n" +
-                        "____________________________________________________________\n";
+                    String desc = input.substring(5);
+                    Task task = new Todo(desc);
+                    inputs.add(task);
 
-                System.out.println(output);
+                    String output = "____________________________________________________________\n" +
+                            "Got it. I've added this task:\n" +
+                            "  " + task + "\n" +
+                            "Now you have " + inputs.size() + " tasks in the list.\n" +
+                            "____________________________________________________________\n";
 
-            } else if (input.startsWith("event ")) {
-                int fromIdx = input.indexOf(" /from ");
-                int toIdx = input.indexOf(" /to ");
-                String desc = input.substring(6, fromIdx);
-                String from = input.substring(fromIdx + 7, toIdx);
-                String to = input.substring(toIdx + 5);
-                Task task = new Event(desc, from, to);
-                inputs.add(task);
+                    System.out.println(output);
 
-                String output = "____________________________________________________________\n" +
-                        "Got it. I've added this task:\n" +
-                        "  " + task + "\n" +
-                        "Now you have " + inputs.size() + " tasks in the list.\n" +
-                        "____________________________________________________________\n";
+                } else if (input.startsWith("deadline ")) {
+                    if (!input.contains(" /by ")) {
+                        throw new AthenaException("A deadline must have a /by time.");
+                    }
 
-                System.out.println(output);
+                    int idx = input.indexOf(" /by ");
+                    String desc = input.substring(9, idx);
+                    String by = input.substring(idx + 5);
+                    Task task = new Deadline(desc, by);
+                    inputs.add(task);
 
-            } else {
-                inputs.add(new Task(input));
+                    String output = "____________________________________________________________\n" +
+                            "Got it. I've added this task:\n" +
+                            "  " + task + "\n" +
+                            "Now you have " + inputs.size() + " tasks in the list.\n" +
+                            "____________________________________________________________\n";
 
-                String output = "____________________________________________________________\n" +
-                        "added: " + input + "\n" +
-                        "____________________________________________________________\n";
+                    System.out.println(output);
 
-                System.out.println(output);
+                } else if (input.startsWith("event ")) {
+                    int fromIdx = input.indexOf(" /from ");
+                    int toIdx = input.indexOf(" /to ");
+                    String desc = input.substring(6, fromIdx);
+                    String from = input.substring(fromIdx + 7, toIdx);
+                    String to = input.substring(toIdx + 5);
+                    Task task = new Event(desc, from, to);
+                    inputs.add(task);
+
+                    String output = "____________________________________________________________\n" +
+                            "Got it. I've added this task:\n" +
+                            "  " + task + "\n" +
+                            "Now you have " + inputs.size() + " tasks in the list.\n" +
+                            "____________________________________________________________\n";
+
+                    System.out.println(output);
+
+                } else {
+                    throw new AthenaException("I don't know what that means.");
+                }
+
+            } catch (AthenaException e) {
+                System.out.println("____________________________________________________________\n" +
+                        e.getMessage() + "\n" +
+                        "____________________________________________________________\n");
             }
         }
 
