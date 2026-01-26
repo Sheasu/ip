@@ -119,6 +119,18 @@ public class Athena {
 
                     System.out.println(output);
 
+                } else if (input.startsWith("delete ")) {
+                    int idx = Integer.parseInt(input.substring(7)) - 1;
+                    Task removed = inputs.remove(idx);
+
+                    String output = "____________________________________________________________\n" +
+                            "Noted. I've removed this task:\n" +
+                            "  " + removed + "\n" +
+                            "Now you have " + inputs.size() + " tasks in the list.\n" +
+                            "____________________________________________________________\n";
+
+                    System.out.println(output);
+
                 } else {
                     throw new AthenaException("I don't know what that means.");
                 }
