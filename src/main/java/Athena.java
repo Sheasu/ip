@@ -61,6 +61,51 @@ public class Athena {
 
                 System.out.println(output);
 
+            } else if (input.startsWith("todo ")) {
+                String desc = input.substring(5);
+                Task task = new Todo(desc);
+                inputs.add(task);
+
+                String output = "____________________________________________________________\n" +
+                        "Got it. I've added this task:\n" +
+                        "  " + task + "\n" +
+                        "Now you have " + inputs.size() + " tasks in the list.\n" +
+                        "____________________________________________________________\n";
+
+                System.out.println(output);
+
+            } else if (input.startsWith("deadline ")) {
+                int idx = input.indexOf(" /by ");
+                String desc = input.substring(9, idx);
+                String by = input.substring(idx + 5);
+                Task task = new Deadline(desc, by);
+                inputs.add(task);
+
+                String output = "____________________________________________________________\n" +
+                        "Got it. I've added this task:\n" +
+                        "  " + task + "\n" +
+                        "Now you have " + inputs.size() + " tasks in the list.\n" +
+                        "____________________________________________________________\n";
+
+                System.out.println(output);
+
+            } else if (input.startsWith("event ")) {
+                int fromIdx = input.indexOf(" /from ");
+                int toIdx = input.indexOf(" /to ");
+                String desc = input.substring(6, fromIdx);
+                String from = input.substring(fromIdx + 7, toIdx);
+                String to = input.substring(toIdx + 5);
+                Task task = new Event(desc, from, to);
+                inputs.add(task);
+
+                String output = "____________________________________________________________\n" +
+                        "Got it. I've added this task:\n" +
+                        "  " + task + "\n" +
+                        "Now you have " + inputs.size() + " tasks in the list.\n" +
+                        "____________________________________________________________\n";
+
+                System.out.println(output);
+
             } else {
                 inputs.add(new Task(input));
 
