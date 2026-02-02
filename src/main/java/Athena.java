@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.time.format.DateTimeParseException;
 
 public class Athena {
     private static final String FILE_PATH = "./data/athena.txt";
@@ -152,6 +153,10 @@ public class Athena {
             } catch (AthenaException e) {
                 System.out.println("____________________________________________________________\n" +
                         e.getMessage() + "\n" +
+                        "____________________________________________________________\n");
+            } catch (DateTimeParseException e) {
+                System.out.println("____________________________________________________________\n" +
+                        "Please use format: yyyy-mm-dd HHmm (e.g., 2019-12-02 1800)\n" +
                         "____________________________________________________________\n");
             } catch (Exception e) {
                 System.out.println("____________________________________________________________\n" +
