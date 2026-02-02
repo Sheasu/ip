@@ -1,7 +1,15 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class Athena {
+    private static final String FILE_PATH = "./data/athena.txt";
+
     public static void main(String[] args) {
         String intro = "____________________________________________________________\n" +
                 "Hello! I'm Athena\n" +
@@ -12,9 +20,9 @@ public class Athena {
                 "Bye. Hope to see you again soon!\n" +
                 "____________________________________________________________\n";
 
-        System.out.println(intro);
+        ArrayList<Task> inputs = loadTasks();
 
-        ArrayList<Task> inputs = new ArrayList<>();
+        System.out.println(intro);
 
         Scanner scanner = new Scanner(System.in);
 
@@ -46,6 +54,7 @@ public class Athena {
                     int taskNumber = Integer.parseInt(input.substring(5)) - 1;
                     Task task = inputs.get(taskNumber);
                     task.markAsDone();
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "Nice! I've marked this task as done:\n" +
@@ -58,6 +67,7 @@ public class Athena {
                     int taskNumber = Integer.parseInt(input.substring(7)) - 1;
                     Task task = inputs.get(taskNumber);
                     task.markAsNotDone();
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "OK, I've marked this task as not done yet:\n" +
@@ -74,6 +84,7 @@ public class Athena {
                     String desc = input.substring(5);
                     Task task = new Todo(desc);
                     inputs.add(task);
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "Got it. I've added this task:\n" +
@@ -93,6 +104,7 @@ public class Athena {
                     String by = input.substring(idx + 5);
                     Task task = new Deadline(desc, by);
                     inputs.add(task);
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "Got it. I've added this task:\n" +
@@ -110,6 +122,7 @@ public class Athena {
                     String to = input.substring(toIdx + 5);
                     Task task = new Event(desc, from, to);
                     inputs.add(task);
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "Got it. I've added this task:\n" +
@@ -122,6 +135,7 @@ public class Athena {
                 } else if (input.startsWith("delete ")) {
                     int idx = Integer.parseInt(input.substring(7)) - 1;
                     Task removed = inputs.remove(idx);
+                    saveTasks(inputs);
 
                     String output = "____________________________________________________________\n" +
                             "Noted. I've removed this task:\n" +
@@ -139,9 +153,75 @@ public class Athena {
                 System.out.println("____________________________________________________________\n" +
                         e.getMessage() + "\n" +
                         "____________________________________________________________\n");
+            } catch (Exception e) {
+                System.out.println("____________________________________________________________\n" +
+                        "An error occurred: " + e.getMessage() + "\n" +
+                        "____________________________________________________________\n");
             }
         }
 
+        scanner.close();
         System.out.println(outro);
+    }
+
+    private static void saveTasks(ArrayList<Task> tasks) {
+        try {
+            File f = new File(FILE_PATH);
+
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
+
+            FileWriter fw = new FileWriter(f);
+
+            for (Task t : tasks) {
+                fw.write(t.toSaveFormat() + System.lineSeparator());
+            }
+
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error saving tasks: " + e.getMessage());
+        }
+    }
+
+    private static ArrayList<Task> loadTasks() {
+        ArrayList<Task> tasks = new ArrayList<>();
+        File f = new File(FILE_PATH);
+
+        if (!f.exists()) {
+            return tasks;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
+
+            for (String line : lines) {
+                String[] p = line.split(" \\| ");
+                Task t;
+
+                switch (p[0]) {
+                    case "T":
+                        t = new Todo(p[2]);
+                        break;
+                    case "D":
+                        t = new Deadline(p[2], p[3]);
+                        break;
+                    case "E":
+                        t = new Event(p[2], p[3], p[4]);
+                        break;
+                    default:
+                        continue;
+                }
+
+                if (p[1].equals("1")) {
+                    t.markAsDone();
+                }
+                tasks.add(t);
+            }
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Error loading tasks. Data file might be corrupted.");
+        }
+
+        return tasks;
     }
 }
