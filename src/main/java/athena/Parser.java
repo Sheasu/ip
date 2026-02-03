@@ -1,3 +1,5 @@
+package athena;
+
 public class Parser {
 
     public static String getCommandWord(String input) {

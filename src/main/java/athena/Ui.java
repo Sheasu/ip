@@ -1,3 +1,5 @@
+package athena;
+
 import java.util.Scanner;
 
 public class Ui {
@@ -13,7 +15,7 @@ public class Ui {
     }
 
     public void showWelcome() {
-        System.out.println(line + "\nHello! I'm Athena\nWhat can I do for you?\n" + line);
+        System.out.println(line + "\nHello! I'm Athena.\nWhat can I do for you?\n" + line);
     }
 
     public void showGoodbye() {
