@@ -1,232 +1,113 @@
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 import java.time.format.DateTimeParseException;
 
 public class Athena {
-    private static final String FILE_PATH = "./data/athena.txt";
+    private Storage storage;
+    private TaskList tasks;
+    private Ui ui;
 
-    public static void main(String[] args) {
-        String intro = "____________________________________________________________\n" +
-                "Hello! I'm Athena\n" +
-                "What can I do for you?\n" +
-                "____________________________________________________________\n";
+    public Athena(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        try {
+            tasks = new TaskList(storage.load());
+        } catch (AthenaException e) {
+            ui.showError("Could not load tasks.");
+            tasks = new TaskList();
+        }
+    }
 
-        String outro = "____________________________________________________________\n" +
-                "Bye. Hope to see you again soon!\n" +
-                "____________________________________________________________\n";
+    public void run() {
+        ui.showWelcome();
+        boolean isExit = false;
 
-        ArrayList<Task> inputs = loadTasks();
-
-        System.out.println(intro);
-
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            String input = scanner.nextLine();
-
+        while (!isExit) {
+            String input = ui.readCommand();
             try {
-                if (input.trim().isEmpty()) {
+                String commandWord = Parser.getCommandWord(input);
+
+                if (commandWord.isEmpty()) {
                     throw new AthenaException("Please enter a command.");
                 }
 
-                if (input.equals("bye")) {
-                    break;
-                }
+                switch (commandWord) {
+                    case "bye":
+                        isExit = true;
+                        break;
 
-                if (input.equals("list")) {
-                    String output = "____________________________________________________________\n" +
-                            "Here are the tasks in your list:\n";
+                    case "list":
+                        StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
+                        for (int i = 0; i < tasks.getSize(); i++) {
+                            out.append(i + 1).append(".").append(tasks.getTask(i));
+                            if (i < tasks.getSize() - 1) out.append("\n");
+                        }
+                        ui.showMessage(out.toString());
+                        break;
 
-                    for (int i = 0; i < inputs.size(); i++) {
-                        output += (i + 1) + "." + inputs.get(i) + "\n";
-                    }
+                    case "mark":
+                        int mIdx = Parser.parseIndex(input);
+                        Task mT = tasks.getTask(mIdx);
+                        mT.markAsDone();
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("Nice! I've marked this task as done:\n" + mT);
+                        break;
 
-                    output += "____________________________________________________________\n";
+                    case "unmark":
+                        int uIdx = Parser.parseIndex(input);
+                        Task uT = tasks.getTask(uIdx);
+                        uT.markAsNotDone();
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("OK, I've marked this task as not done yet:\n" + uT);
+                        break;
 
-                    System.out.println(output);
+                    case "todo":
+                        Task t = new Todo(Parser.parseTodoDescription(input));
+                        tasks.add(t);
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("Got it. Added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.");
+                        break;
 
-                } else if (input.startsWith("mark ")) {
-                    int taskNumber = Integer.parseInt(input.substring(5)) - 1;
-                    Task task = inputs.get(taskNumber);
-                    task.markAsDone();
-                    saveTasks(inputs);
+                    case "deadline":
+                        String[] dParts = Parser.parseDeadline(input);
+                        Task d = new Deadline(dParts[0], dParts[1]);
+                        tasks.add(d);
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("Got it. Added:\n  " + d + "\nNow you have " + tasks.getSize() + " tasks.");
+                        break;
 
-                    String output = "____________________________________________________________\n" +
-                            "Nice! I've marked this task as done:\n" +
-                            task + "\n" +
-                            "____________________________________________________________\n";
+                    case "event":
+                        String[] eParts = Parser.parseEvent(input);
+                        Task e = new Event(eParts[0], eParts[1], eParts[2]);
+                        tasks.add(e);
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("Got it. Added:\n  " + e + "\nNow you have " + tasks.getSize() + " tasks.");
+                        break;
 
-                    System.out.println(output);
+                    case "delete":
+                        int delIdx = Parser.parseIndex(input);
+                        Task removed = tasks.delete(delIdx);
+                        storage.save(tasks.getAllTasks());
+                        ui.showMessage("Noted. Removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.");
+                        break;
 
-                } else if (input.startsWith("unmark ")) {
-                    int taskNumber = Integer.parseInt(input.substring(7)) - 1;
-                    Task task = inputs.get(taskNumber);
-                    task.markAsNotDone();
-                    saveTasks(inputs);
-
-                    String output = "____________________________________________________________\n" +
-                            "OK, I've marked this task as not done yet:\n" +
-                            task + "\n" +
-                            "____________________________________________________________\n";
-
-                    System.out.println(output);
-
-                } else if (input.startsWith("todo")) {
-                    if (input.length() <= 5) {
-                        throw new AthenaException("The description of a todo cannot be empty.");
-                    }
-
-                    String desc = input.substring(5);
-                    Task task = new Todo(desc);
-                    inputs.add(task);
-                    saveTasks(inputs);
-
-                    String output = "____________________________________________________________\n" +
-                            "Got it. I've added this task:\n" +
-                            "  " + task + "\n" +
-                            "Now you have " + inputs.size() + " tasks in the list.\n" +
-                            "____________________________________________________________\n";
-
-                    System.out.println(output);
-
-                } else if (input.startsWith("deadline ")) {
-                    if (!input.contains(" /by ")) {
-                        throw new AthenaException("A deadline must have a /by time.");
-                    }
-
-                    int idx = input.indexOf(" /by ");
-                    String desc = input.substring(9, idx);
-                    String by = input.substring(idx + 5);
-                    Task task = new Deadline(desc, by);
-                    inputs.add(task);
-                    saveTasks(inputs);
-
-                    String output = "____________________________________________________________\n" +
-                            "Got it. I've added this task:\n" +
-                            "  " + task + "\n" +
-                            "Now you have " + inputs.size() + " tasks in the list.\n" +
-                            "____________________________________________________________\n";
-
-                    System.out.println(output);
-
-                } else if (input.startsWith("event ")) {
-                    int fromIdx = input.indexOf(" /from ");
-                    int toIdx = input.indexOf(" /to ");
-                    String desc = input.substring(6, fromIdx);
-                    String from = input.substring(fromIdx + 7, toIdx);
-                    String to = input.substring(toIdx + 5);
-                    Task task = new Event(desc, from, to);
-                    inputs.add(task);
-                    saveTasks(inputs);
-
-                    String output = "____________________________________________________________\n" +
-                            "Got it. I've added this task:\n" +
-                            "  " + task + "\n" +
-                            "Now you have " + inputs.size() + " tasks in the list.\n" +
-                            "____________________________________________________________\n";
-
-                    System.out.println(output);
-
-                } else if (input.startsWith("delete ")) {
-                    int idx = Integer.parseInt(input.substring(7)) - 1;
-                    Task removed = inputs.remove(idx);
-                    saveTasks(inputs);
-
-                    String output = "____________________________________________________________\n" +
-                            "Noted. I've removed this task:\n" +
-                            "  " + removed + "\n" +
-                            "Now you have " + inputs.size() + " tasks in the list.\n" +
-                            "____________________________________________________________\n";
-
-                    System.out.println(output);
-
-                } else {
-                    throw new AthenaException("I don't know what that means.");
+                    default:
+                        throw new AthenaException("I don't know what that means.");
                 }
 
             } catch (AthenaException e) {
-                System.out.println("____________________________________________________________\n" +
-                        e.getMessage() + "\n" +
-                        "____________________________________________________________\n");
+                ui.showError(e.getMessage());
             } catch (DateTimeParseException e) {
-                System.out.println("____________________________________________________________\n" +
-                        "Please use format: yyyy-mm-dd HHmm (e.g., 2019-12-02 1800)\n" +
-                        "____________________________________________________________\n");
+                ui.showError("Please use the date format: yyyy-mm-dd HHmm");
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                ui.showError("Please provide a valid task number.");
             } catch (Exception e) {
-                System.out.println("____________________________________________________________\n" +
-                        "An error occurred: " + e.getMessage() + "\n" +
-                        "____________________________________________________________\n");
+                ui.showError("An unexpected error occurred: " + e.getMessage());
             }
         }
-
-        scanner.close();
-        System.out.println(outro);
+        ui.showGoodbye();
+        ui.closeScanner();
     }
 
-    private static void saveTasks(ArrayList<Task> tasks) {
-        try {
-            File f = new File(FILE_PATH);
-
-            if (!f.getParentFile().exists()) {
-                f.getParentFile().mkdirs();
-            }
-
-            FileWriter fw = new FileWriter(f);
-
-            for (Task t : tasks) {
-                fw.write(t.toSaveFormat() + System.lineSeparator());
-            }
-
-            fw.close();
-        } catch (IOException e) {
-            System.out.println("Error saving tasks: " + e.getMessage());
-        }
-    }
-
-    private static ArrayList<Task> loadTasks() {
-        ArrayList<Task> tasks = new ArrayList<>();
-        File f = new File(FILE_PATH);
-
-        if (!f.exists()) {
-            return tasks;
-        }
-
-        try {
-            List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
-
-            for (String line : lines) {
-                String[] p = line.split(" \\| ");
-                Task t;
-
-                switch (p[0]) {
-                    case "T":
-                        t = new Todo(p[2]);
-                        break;
-                    case "D":
-                        t = new Deadline(p[2], p[3]);
-                        break;
-                    case "E":
-                        t = new Event(p[2], p[3], p[4]);
-                        break;
-                    default:
-                        continue;
-                }
-
-                if (p[1].equals("1")) {
-                    t.markAsDone();
-                }
-                tasks.add(t);
-            }
-        } catch (IOException | ArrayIndexOutOfBoundsException e) {
-            System.out.println("Error loading tasks. Data file might be corrupted.");
-        }
-
-        return tasks;
+    public static void main(String[] args) {
+        new Athena("./data/athena.txt").run();
     }
 }
