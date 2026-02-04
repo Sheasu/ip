@@ -18,18 +18,27 @@ public class Storage {
     public ArrayList<Task> load() throws AthenaException {
         ArrayList<Task> tasks = new ArrayList<>();
         File f = new File(filePath);
-        if (!f.exists()) return tasks;
+        if (!f.exists()) {
+            return tasks;
+        }
 
         try {
             List<String> lines = Files.readAllLines(Paths.get(filePath));
             for (String line : lines) {
                 String[] p = line.split(" \\| ");
                 Task t;
-                if (p[0].equals("T")) t = new Todo(p[2]);
-                else if (p[0].equals("D")) t = new Deadline(p[2], p[3]);
-                else if (p[0].equals("E")) t = new Event(p[2], p[3], p[4]);
-                else continue;
-                if (p[1].equals("1")) t.markAsDone();
+                if (p[0].equals("T")) {
+                    t = new Todo(p[2]);
+                } else if (p[0].equals("D")) {
+                    t = new Deadline(p[2], p[3]);
+                } else if (p[0].equals("E")) {
+                    t = new Event(p[2], p[3], p[4]);
+                } else {
+                    continue;
+                }
+                if (p[1].equals("1")) {
+                    t.markAsDone();
+                }
                 tasks.add(t);
             }
         } catch (Exception e) {
@@ -41,7 +50,9 @@ public class Storage {
     public void save(ArrayList<Task> tasks) {
         try {
             File f = new File(filePath);
-            if (!f.getParentFile().exists()) f.getParentFile().mkdirs();
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
             FileWriter fw = new FileWriter(f);
             for (Task t : tasks) {
                 fw.write(t.toSaveFormat() + System.lineSeparator());
