@@ -44,67 +44,69 @@ public class Athena {
                 }
 
                 switch (commandWord) {
-                    case "bye":
-                        isExit = true;
-                        break;
+                case "bye":
+                    isExit = true;
+                    break;
 
-                    case "list":
-                        StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
-                        for (int i = 0; i < tasks.getSize(); i++) {
-                            out.append(i + 1).append(".").append(tasks.getTask(i));
-                            if (i < tasks.getSize() - 1) out.append("\n");
+                case "list":
+                    StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
+                    for (int i = 0; i < tasks.getSize(); i++) {
+                        out.append(i + 1).append(".").append(tasks.getTask(i));
+                        if (i < tasks.getSize() - 1) {
+                            out.append("\n");
                         }
-                        ui.showMessage(out.toString());
-                        break;
+                    }
+                    ui.showMessage(out.toString());
+                    break;
 
-                    case "mark":
-                        int mIdx = Parser.parseIndex(input);
-                        Task mT = tasks.getTask(mIdx);
-                        mT.markAsDone();
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("Nice! I've marked this task as done:\n" + mT);
-                        break;
+                case "mark":
+                    int mIdx = Parser.parseIndex(input);
+                    Task mT = tasks.getTask(mIdx);
+                    mT.markAsDone();
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("Nice! I've marked this task as done:\n" + mT);
+                    break;
 
-                    case "unmark":
-                        int uIdx = Parser.parseIndex(input);
-                        Task uT = tasks.getTask(uIdx);
-                        uT.markAsNotDone();
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("OK, I've marked this task as not done yet:\n" + uT);
-                        break;
+                case "unmark":
+                    int uIdx = Parser.parseIndex(input);
+                    Task uT = tasks.getTask(uIdx);
+                    uT.markAsNotDone();
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("OK, I've marked this task as not done yet:\n" + uT);
+                    break;
 
-                    case "todo":
-                        Task t = new Todo(Parser.parseTodoDescription(input));
-                        tasks.add(t);
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("Got it. Added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.");
-                        break;
+                case "todo":
+                    Task t = new Todo(Parser.parseTodoDescription(input));
+                    tasks.add(t);
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("Got it. Added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.");
+                    break;
 
-                    case "deadline":
-                        String[] dParts = Parser.parseDeadline(input);
-                        Task d = new Deadline(dParts[0], dParts[1]);
-                        tasks.add(d);
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("Got it. Added:\n  " + d + "\nNow you have " + tasks.getSize() + " tasks.");
-                        break;
+                case "deadline":
+                    String[] dParts = Parser.parseDeadline(input);
+                    Task d = new Deadline(dParts[0], dParts[1]);
+                    tasks.add(d);
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("Got it. Added:\n  " + d + "\nNow you have " + tasks.getSize() + " tasks.");
+                    break;
 
-                    case "event":
-                        String[] eParts = Parser.parseEvent(input);
-                        Task e = new Event(eParts[0], eParts[1], eParts[2]);
-                        tasks.add(e);
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("Got it. Added:\n  " + e + "\nNow you have " + tasks.getSize() + " tasks.");
-                        break;
+                case "event":
+                    String[] eParts = Parser.parseEvent(input);
+                    Task e = new Event(eParts[0], eParts[1], eParts[2]);
+                    tasks.add(e);
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("Got it. Added:\n  " + e + "\nNow you have " + tasks.getSize() + " tasks.");
+                    break;
 
-                    case "delete":
-                        int delIdx = Parser.parseIndex(input);
-                        Task removed = tasks.delete(delIdx);
-                        storage.save(tasks.getAllTasks());
-                        ui.showMessage("Noted. Removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.");
-                        break;
+                case "delete":
+                    int delIdx = Parser.parseIndex(input);
+                    Task removed = tasks.delete(delIdx);
+                    storage.save(tasks.getAllTasks());
+                    ui.showMessage("Noted. Removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.");
+                    break;
 
-                    default:
-                        throw new AthenaException("I don't know what that means.");
+                default:
+                    throw new AthenaException("I don't know what that means.");
                 }
 
             } catch (AthenaException e) {

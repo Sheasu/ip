@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Contains the task list and has operations to add/delete tasks in the list.
  */
 public class TaskList {
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
