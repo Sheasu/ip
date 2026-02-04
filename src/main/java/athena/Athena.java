@@ -2,11 +2,20 @@ package athena;
 
 import java.time.format.DateTimeParseException;
 
+/**
+ * Entry point of the Athena application.
+ * Initializes the application and starts the interaction loop.
+ */
 public class Athena {
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
 
+    /**
+     * Initializes the UI, Storage, and loads existing tasks from the file path.
+     *
+     * @param filePath The path to the file where tasks are stored.
+     */
     public Athena(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -18,6 +27,9 @@ public class Athena {
         }
     }
 
+    /**
+     * Runs the main program loop, processing user commands until the exit command is given.
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;

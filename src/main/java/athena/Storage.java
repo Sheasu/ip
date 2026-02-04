@@ -8,13 +8,27 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Deals with loading tasks from the file and saving tasks in the file.
+ */
 public class Storage {
     private String filePath;
 
+    /**
+     * Constructs a Storage object with a specific file path.
+     *
+     * @param filePath The path to the file where data is stored and loaded.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads the task list from the hard disk.
+     *
+     * @return An ArrayList of tasks loaded from the file.
+     * @throws AthenaException If the file exists but is corrupted.
+     */
     public ArrayList<Task> load() throws AthenaException {
         ArrayList<Task> tasks = new ArrayList<>();
         File f = new File(filePath);
@@ -38,6 +52,11 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the current list of tasks to the hard disk.
+     *
+     * @param tasks The list of tasks to be saved.
+     */
     public void save(ArrayList<Task> tasks) {
         try {
             File f = new File(filePath);

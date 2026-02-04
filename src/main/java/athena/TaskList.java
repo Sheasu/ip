@@ -2,6 +2,9 @@ package athena;
 
 import java.util.ArrayList;
 
+/**
+ * Contains the task list and has operations to add/delete tasks in the list.
+ */
 public class TaskList {
     private ArrayList<Task> tasks;
 
