@@ -1,21 +1,13 @@
 package athena;
 
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
-/**
- * Entry point of the Athena application.
- * Initializes the application and starts the interaction loop.
- */
 public class Athena {
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
 
-    /**
-     * Initializes the UI, Storage, and loads existing tasks from the file path.
-     *
-     * @param filePath The path to the file where tasks are stored.
-     */
     public Athena(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -27,9 +19,6 @@ public class Athena {
         }
     }
 
-    /**
-     * Runs the main program loop, processing user commands until the exit command is given.
-     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
@@ -52,9 +41,7 @@ public class Athena {
                     StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
                     for (int i = 0; i < tasks.getSize(); i++) {
                         out.append(i + 1).append(".").append(tasks.getTask(i));
-                        if (i < tasks.getSize() - 1) {
-                            out.append("\n");
-                        }
+                        if (i < tasks.getSize() - 1) out.append("\n");
                     }
                     ui.showMessage(out.toString());
                     break;
@@ -103,6 +90,24 @@ public class Athena {
                     Task removed = tasks.delete(delIdx);
                     storage.save(tasks.getAllTasks());
                     ui.showMessage("Noted. Removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.");
+                    break;
+
+                case "find":
+                    String keyword = Parser.parseFindKeyword(input);
+                    ArrayList<Task> found = tasks.findTasks(keyword);
+
+                    if (found.isEmpty()) {
+                        ui.showMessage("No matching tasks found for: " + keyword);
+                    } else {
+                        StringBuilder result = new StringBuilder("Here are the matching tasks in your list:\n");
+                        for (int i = 0; i < found.size(); i++) {
+                            result.append(i + 1).append(".").append(found.get(i));
+                            if (i < found.size() - 1) {
+                                result.append("\n");
+                            }
+                        }
+                        ui.showMessage(result.toString());
+                    }
                     break;
 
                 default:

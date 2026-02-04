@@ -75,4 +75,19 @@ public class Parser {
         String to = input.substring(toIdx + 5).trim();
         return new String[]{desc, from, to};
     }
+
+    /**
+     * Parses the search keyword from the find command.
+     *
+     * @param input Full raw user input string.
+     * @return The keyword to search for.
+     * @throws AthenaException If the keyword is missing.
+     */
+    public static String parseFindKeyword(String input) throws AthenaException {
+        String trimmed = input.trim();
+        if (trimmed.length() <= 5) {
+            throw new AthenaException("Please specify a keyword to find.");
+        }
+        return trimmed.substring(5).trim();
+    }
 }
