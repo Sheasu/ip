@@ -40,13 +40,6 @@ public class Ui {
     }
 
     /**
-     * Prints a divider line.
-     */
-    public void showLine() {
-        System.out.println(line);
-    }
-
-    /**
      * Displays an error message framed by divider lines.
      *
      * @param message The error message to display.
