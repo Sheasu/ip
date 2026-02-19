@@ -1,0 +1,42 @@
+.root {
+    -fx-font-family: "Georgia", serif;
+    -fx-background-image: url("/images/battlefield.png");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: rgba(0, 0, 0, 0.65);
+}
+
+.dialog-label {
+    -fx-padding: 10 15 10 15;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-width: 2;
+    -fx-font-size: 14px;
+}
+
+.user-label {
+    -fx-background-color: #2B2B2B;
+    -fx-border-color: #707070;
+    -fx-text-fill: #E0E0E0;
+}
+
+.athena-label {
+    -fx-background-color: #4A0404;
+    -fx-border-color: #CD7F32;
+    -fx-text-fill: #FFD700;
+}
+
+.button {
+    -fx-background-color: #CD7F32;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+}
