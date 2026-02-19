@@ -1,6 +1,4 @@
-D | 1 | return book | 2019-12-02 1800
+T | 0 | new task
 T | 1 | this
-T | 0 | this
-D | 1 | this | 2024-12-02 1600
-E | 0 | this | to | from
-T | 0 | this
+T | 1 | eat lunch
+D | 0 | event | 2024-01-01 0400
