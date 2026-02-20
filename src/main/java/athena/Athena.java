@@ -23,6 +23,8 @@ public class Athena {
     }
 
     public String getResponse(String input) {
+        assert input != null : "Logic engine received a null input string";
+
         try {
             return executeCommand(input);
         } catch (AthenaException e) {
@@ -68,11 +70,15 @@ public class Athena {
     }
 
     private String handleList() {
-        if (tasks.getSize() == 0) return "Your list is currently empty, spartan.";
+        if (tasks.getSize() == 0) {
+            return "Your list is currently empty, spartan.";
+        }
         StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.getSize(); i++) {
             out.append(i + 1).append(".").append(tasks.getTask(i));
-            if (i < tasks.getSize() - 1) out.append("\n");
+            if (i < tasks.getSize() - 1) {
+                out.append("\n");
+            }
         }
         return out.toString();
     }
@@ -126,12 +132,16 @@ public class Athena {
     private String handleFind(String input) throws AthenaException {
         String keyword = Parser.parseFindKeyword(input);
         ArrayList<Task> found = tasks.findTasks(keyword);
-        if (found.isEmpty()) return "No matching tasks found for: " + keyword;
+        if (found.isEmpty()) {
+            return "No matching tasks found for: " + keyword;
+        }
 
         StringBuilder result = new StringBuilder("Matching tasks found:\n");
         for (int i = 0; i < found.size(); i++) {
             result.append(i + 1).append(".").append(found.get(i));
-            if (i < found.size() - 1) result.append("\n");
+            if (i < found.size() - 1) {
+                result.append("\n");
+            }
         }
         return result.toString();
     }

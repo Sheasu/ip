@@ -33,6 +33,8 @@ public class MainWindow extends AnchorPane {
     }
 
     public void setAthena(Athena a) {
+        assert a != null : "Athena engine was not initialized correctly";
+
         athena = a;
         dialogContainer.getChildren().add(
                 DialogBox.getAthenaDialog("The phalanx is formed. Spartan, your orders?", athenaImage)
@@ -42,7 +44,12 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
+
+        assert input != null : "userInput TextField returned a null value";
+
         String response = athena.getResponse(input);
+
+        assert response != null : "Athena logic returned a null response";
 
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),

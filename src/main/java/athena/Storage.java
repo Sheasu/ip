@@ -24,6 +24,9 @@ public class Storage {
 
         try {
             List<String> lines = Files.readAllLines(Paths.get(filePath));
+
+            assert lines != null : "File reading returned a null list of lines";
+
             for (String line : lines) {
                 Task t = parseLineToTask(line);
                 if (t != null) {
@@ -38,7 +41,12 @@ public class Storage {
 
     private Task parseLineToTask(String line) {
         String[] p = line.split(" \\| ");
-        if (p.length < 3) return null;
+
+        if (p.length < 3) {
+            return null;
+        }
+
+        assert p.length >= 3 : "Logic error: p.length check failed to catch a short line";
 
         Task t;
         switch (p[0]) {
