@@ -8,7 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-    private Athena athena = new Athena();
+    private final Athena athena = new Athena();
 
     @Override
     public void start(Stage stage) {

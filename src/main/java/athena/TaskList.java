@@ -2,9 +2,6 @@ package athena;
 
 import java.util.ArrayList;
 
-/**
- * Contains the task list and has operations to add/delete tasks in the list.
- */
 public class TaskList {
     private final ArrayList<Task> tasks;
 
@@ -21,17 +18,17 @@ public class TaskList {
     }
 
     public Task getTask(int index) {
-        assert index >= 0 && index < tasks.size() : "Index out of bounds in TaskList.getTask";
+        assert index >= 0 && index < tasks.size();
         return tasks.get(index);
     }
 
     public void add(Task t) {
-        assert t != null : "Cannot add a null task to TaskList";
+        assert t != null;
         tasks.add(t);
     }
 
     public Task delete(int index) {
-        assert index >= 0 && index < tasks.size() : "Index out of bounds in TaskList.delete";
+        assert index >= 0 && index < tasks.size();
         return tasks.remove(index);
     }
 
@@ -39,16 +36,21 @@ public class TaskList {
         return tasks.size();
     }
 
-    /**
-     * Finds tasks that contain the given keyword in their description.
-     *
-     * @param keyword The string to search for.
-     * @return A list of tasks that match the keyword.
-     */
+    public String getFormattedList() {
+        StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
+        for (int i = 0; i < tasks.size(); i++) {
+            out.append(i + 1).append(".").append(tasks.get(i));
+            if (i < tasks.size() - 1) {
+                out.append("\n");
+            }
+        }
+        return out.toString();
+    }
+
     public ArrayList<Task> findTasks(String keyword) {
         ArrayList<Task> matchingTasks = new ArrayList<>();
         for (Task task : tasks) {
-            if (task.toString().contains(keyword)) {
+            if (task.toString().toLowerCase().contains(keyword.toLowerCase())) {
                 matchingTasks.add(task);
             }
         }

@@ -4,9 +4,9 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class Athena {
-    private Storage storage;
+    private final Storage storage;
     private TaskList tasks;
-    private Ui ui;
+    private final Ui ui;
 
     public Athena() {
         this("./data/athena.txt");
@@ -23,8 +23,6 @@ public class Athena {
     }
 
     public String getResponse(String input) {
-        assert input != null : "Logic engine received a null input string";
-
         try {
             return executeCommand(input);
         } catch (AthenaException e) {
@@ -34,13 +32,12 @@ public class Athena {
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
             return "Please provide a valid task number.";
         } catch (Exception e) {
-            return "An unexpected error occurred: " + e.getMessage();
+            return "An unexpected error occurred.";
         }
     }
 
     private String executeCommand(String input) throws AthenaException {
         String commandWord = Parser.getCommandWord(input);
-
         if (commandWord.isEmpty()) {
             throw new AthenaException("Please enter a command.");
         }
@@ -51,9 +48,9 @@ public class Athena {
         case "list":
             return handleList();
         case "mark":
-            return handleMark(input);
+            return handleMarkStatus(input, true);
         case "unmark":
-            return handleUnmark(input);
+            return handleMarkStatus(input, false);
         case "todo":
             return handleTodo(input);
         case "deadline":
@@ -65,7 +62,7 @@ public class Athena {
         case "find":
             return handleFind(input);
         default:
-            throw new AthenaException("I do not recognize this command in my archives.");
+            throw new AthenaException("I do not recognize this command.");
         }
     }
 
@@ -73,60 +70,48 @@ public class Athena {
         if (tasks.getSize() == 0) {
             return "Your list is currently empty, spartan.";
         }
-        StringBuilder out = new StringBuilder("Here are the tasks in your list:\n");
-        for (int i = 0; i < tasks.getSize(); i++) {
-            out.append(i + 1).append(".").append(tasks.getTask(i));
-            if (i < tasks.getSize() - 1) {
-                out.append("\n");
-            }
+        return tasks.getFormattedList();
+    }
+
+    private String handleMarkStatus(String input, boolean isDone) {
+        int idx = Parser.parseIndex(input);
+        Task t = tasks.getTask(idx);
+        if (isDone) {
+            t.markAsDone();
+        } else {
+            t.markAsNotDone();
         }
-        return out.toString();
-    }
-
-    private String handleMark(String input) {
-        int idx = Parser.parseIndex(input);
-        Task t = tasks.getTask(idx);
-        t.markAsDone();
         storage.save(tasks.getAllTasks());
-        return "Victory! I've marked this task as done:\n" + t;
-    }
-
-    private String handleUnmark(String input) {
-        int idx = Parser.parseIndex(input);
-        Task t = tasks.getTask(idx);
-        t.markAsNotDone();
-        storage.save(tasks.getAllTasks());
-        return "Understood. I've marked this as not done yet:\n" + t;
+        String status = isDone ? "marked this task as done" : "marked this as not done";
+        return "Victory! I've " + status + ":\n" + t;
     }
 
     private String handleTodo(String input) throws AthenaException {
         Task t = new Todo(Parser.parseTodoDescription(input));
-        tasks.add(t);
-        storage.save(tasks.getAllTasks());
-        return "Added to the scrolls:\n  " + t + "\nYou now have " + tasks.getSize() + " tasks.";
+        return addTaskAndSave(t);
     }
 
     private String handleDeadline(String input) throws AthenaException {
         String[] parts = Parser.parseDeadline(input);
-        Task d = new Deadline(parts[0], parts[1]);
-        tasks.add(d);
-        storage.save(tasks.getAllTasks());
-        return "Added deadline:\n  " + d + "\nYou now have " + tasks.getSize() + " tasks.";
+        return addTaskAndSave(new Deadline(parts[0], parts[1]));
     }
 
     private String handleEvent(String input) throws AthenaException {
         String[] parts = Parser.parseEvent(input);
-        Task e = new Event(parts[0], parts[1], parts[2]);
-        tasks.add(e);
+        return addTaskAndSave(new Event(parts[0], parts[1], parts[2]));
+    }
+
+    private String addTaskAndSave(Task t) {
+        tasks.add(t);
         storage.save(tasks.getAllTasks());
-        return "Added event:\n  " + e + "\nYou now have " + tasks.getSize() + " tasks.";
+        return "Added to the scrolls:\n  " + t + "\nYou now have " + tasks.getSize() + " tasks.";
     }
 
     private String handleDelete(String input) {
         int idx = Parser.parseIndex(input);
         Task removed = tasks.delete(idx);
         storage.save(tasks.getAllTasks());
-        return "Removed from the records:\n  " + removed + "\nYou now have " + tasks.getSize() + " tasks.";
+        return "Removed from the records:\n  " + removed + "\nTasks remaining: " + tasks.getSize();
     }
 
     private String handleFind(String input) throws AthenaException {
@@ -135,7 +120,10 @@ public class Athena {
         if (found.isEmpty()) {
             return "No matching tasks found for: " + keyword;
         }
+        return formatSearchList(found);
+    }
 
+    private String formatSearchList(ArrayList<Task> found) {
         StringBuilder result = new StringBuilder("Matching tasks found:\n");
         for (int i = 0; i < found.size(); i++) {
             result.append(i + 1).append(".").append(found.get(i));

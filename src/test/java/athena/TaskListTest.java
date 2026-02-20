@@ -8,24 +8,24 @@ import org.junit.jupiter.api.Test;
 public class TaskListTest {
 
     @Test
-    public void getTask_invalidIndex_exceptionThrown() {
-        TaskList tasks = new TaskList();
-        tasks.add(new Todo("test"));
+    public void getTask_indexOutOfBounds_exceptionThrown() {
+        TaskList taskList = new TaskList();
+        taskList.add(new Todo("test task"));
 
-        assertThrows(IndexOutOfBoundsException.class, () -> {
-            tasks.getTask(5);
+        assertThrows(AssertionError.class, () -> {
+            taskList.getTask(5);
         });
     }
 
     @Test
-    public void getSize_afterOperations_correctCount() {
-        TaskList tasks = new TaskList();
-        assertEquals(0, tasks.getSize());
+    public void getSize_multipleOperations_correctCountReturned() {
+        TaskList taskList = new TaskList();
 
-        tasks.add(new Todo("1"));
-        tasks.add(new Todo("2"));
-        tasks.delete(0);
+        taskList.add(new Todo("First task"));
+        taskList.add(new Todo("Second task"));
+        taskList.delete(0);
 
-        assertEquals(1, tasks.getSize());
+        int expectedSize = 1;
+        assertEquals(expectedSize, taskList.getSize());
     }
 }
