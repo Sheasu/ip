@@ -4,14 +4,15 @@ package athena;
  * Represents a generic task that can be marked as done.
  */
 public class Task {
+    private static final String ICON_DONE = "X";
+    private static final String ICON_NOT_DONE = " ";
+    private static final String SAVE_DONE = "1";
+    private static final String SAVE_NOT_DONE = "0";
+    private static final String SAVE_SEPARATOR = " | ";
+
     protected String description;
     protected boolean isDone;
 
-    /**
-     * Creates a task with the given description.
-     *
-     * @param description Description of the task
-     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -25,22 +26,13 @@ public class Task {
         isDone = false;
     }
 
-    /**
-     * Returns the icon representing the status of the task.
-     *
-     * @return "X" if done, else " ".
-     */
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // mark done task with X
+        return isDone ? ICON_DONE : ICON_NOT_DONE;
     }
 
-    /**
-     * Formats the task data for storage in a text file.
-     *
-     * @return String representation of the task in save format.
-     */
     public String toSaveFormat() {
-        return (isDone ? "1" : "0") + " | " + description;
+        String status = isDone ? SAVE_DONE : SAVE_NOT_DONE;
+        return status + SAVE_SEPARATOR + description;
     }
 
     @Override

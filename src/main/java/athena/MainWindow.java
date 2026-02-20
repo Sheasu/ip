@@ -50,10 +50,12 @@ public class MainWindow extends AnchorPane {
         );
         userInput.clear();
 
-        if (input.trim().equalsIgnoreCase("bye")) {
-            PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
-            delay.setOnFinished(event -> Platform.exit());
-            delay.play();
+        if (!input.trim().equalsIgnoreCase("bye")) {
+            return;
         }
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+        delay.setOnFinished(event -> Platform.exit());
+        delay.play();
     }
 }

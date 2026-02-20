@@ -9,20 +9,25 @@ public class ParserTest {
 
     @Test
     public void parseTodoDescription_extraSpaces_trimmedSuccess() throws AthenaException {
-        assertEquals("read book", Parser.parseTodoDescription("todo   read book  "));
+        String input = "todo   read book  ";
+        String expectedDescription = "read book";
+
+        String actualDescription = Parser.parseTodoDescription(input);
+
+        assertEquals(expectedDescription, actualDescription);
     }
 
     @Test
     public void parseDeadline_missingByKeyword_exceptionThrown() {
-        assertThrows(AthenaException.class, () -> {
-            Parser.parseDeadline("deadline return book /at tonight");
-        });
+        String input = "deadline return book /at tonight";
+
+        assertThrows(AthenaException.class, () -> Parser.parseDeadline(input));
     }
 
     @Test
-    public void parseEvent_outOfOrder_exceptionThrown() {
-        assertThrows(AthenaException.class, () -> {
-            Parser.parseEvent("event party /to 10pm");
-        });
+    public void parseEvent_missingToKeyword_exceptionThrown() {
+        String input = "event party /from 8pm";
+
+        assertThrows(AthenaException.class, () -> Parser.parseEvent(input));
     }
 }

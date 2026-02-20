@@ -9,72 +9,82 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Storage {
-    private String filePath;
+    private static final String DELIMITER = " \\| ";
+    private static final String SAVE_DELIMITER = " | ";
+    private final String filePath;
 
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
     public ArrayList<Task> load() throws AthenaException {
-        ArrayList<Task> tasks = new ArrayList<>();
         File f = new File(filePath);
         if (!f.exists()) {
-            return tasks;
+            return new ArrayList<>();
         }
 
         try {
             List<String> lines = Files.readAllLines(Paths.get(filePath));
-            for (String line : lines) {
-                Task t = parseLineToTask(line);
-                if (t != null) {
-                    tasks.add(t);
-                }
-            }
+            return parseLinesToTasks(lines);
         } catch (Exception e) {
             throw new AthenaException("The scrolls of data are corrupted. Starting anew.");
+        }
+    }
+
+    private ArrayList<Task> parseLinesToTasks(List<String> lines) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (String line : lines) {
+            Task t = parseLineToTask(line);
+            if (t != null) {
+                tasks.add(t);
+            }
         }
         return tasks;
     }
 
     private Task parseLineToTask(String line) {
-        String[] p = line.split(" \\| ");
-        if (p.length < 3) return null;
-
-        Task t;
-        switch (p[0]) {
-        case "T":
-            t = new Todo(p[2]);
-            break;
-        case "D":
-            t = new Deadline(p[2], p[3]);
-            break;
-        case "E":
-            t = new Event(p[2], p[3], p[4]);
-            break;
-        default:
+        String[] parts = line.split(DELIMITER);
+        if (parts.length < 3) {
             return null;
         }
 
-        if (p[1].equals("1")) {
-            t.markAsDone();
+        Task task = createTaskByType(parts);
+        if (task != null && parts[1].equals("1")) {
+            task.markAsDone();
         }
-        return t;
+        return task;
+    }
+
+    private Task createTaskByType(String[] parts) {
+        switch (parts[0]) {
+        case "T":
+            return new Todo(parts[2]);
+        case "D":
+            return new Deadline(parts[2], parts[3]);
+        case "E":
+            return new Event(parts[2], parts[3], parts[4]);
+        default:
+            return null;
+        }
     }
 
     public void save(ArrayList<Task> tasks) {
-        try {
-            File f = new File(filePath);
-            if (f.getParentFile() != null && !f.getParentFile().exists()) {
-                f.getParentFile().mkdirs();
-            }
+        File f = new File(filePath);
+        prepareDirectory(f);
 
-            FileWriter fw = new FileWriter(f);
+        try (FileWriter fw = new FileWriter(f)) {
             for (Task t : tasks) {
                 fw.write(t.toSaveFormat() + System.lineSeparator());
             }
-            fw.close();
         } catch (IOException e) {
-            //
+            System.err.println("Warning: Could not save tasks to file.");
+        }
+    }
+
+    private void prepareDirectory(File f) {
+        File parent = f.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
         }
     }
 }
