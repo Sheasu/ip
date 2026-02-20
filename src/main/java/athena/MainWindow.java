@@ -57,7 +57,10 @@ public class MainWindow extends AnchorPane {
         );
         userInput.clear();
 
-        if (!input.trim().equalsIgnoreCase("bye")) {
+        boolean isByeCommand = input.trim().equalsIgnoreCase("bye")
+                || input.trim().equalsIgnoreCase("b");
+
+        if (!isByeCommand) {
             return;
         }
 

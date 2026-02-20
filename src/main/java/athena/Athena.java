@@ -44,22 +44,31 @@ public class Athena {
 
         switch (commandWord) {
         case "bye":
+        case "b":
             return "Farewell! Your tasks are preserved in the scrolls.";
         case "list":
+        case "l":
             return handleList();
         case "mark":
+        case "m":
             return handleMarkStatus(input, true);
         case "unmark":
+        case "u":
             return handleMarkStatus(input, false);
         case "todo":
+        case "t":
             return handleTodo(input);
         case "deadline":
+        case "d":
             return handleDeadline(input);
         case "event":
+        case "e":
             return handleEvent(input);
         case "delete":
+        case "del":
             return handleDelete(input);
         case "find":
+        case "f":
             return handleFind(input);
         default:
             throw new AthenaException("I do not recognize this command.");
