@@ -21,14 +21,17 @@ public class TaskList {
     }
 
     public Task getTask(int index) {
+        assert index >= 0 && index < tasks.size() : "Index out of bounds in TaskList.getTask";
         return tasks.get(index);
     }
 
     public void add(Task t) {
+        assert t != null : "Cannot add a null task to TaskList";
         tasks.add(t);
     }
 
     public Task delete(int index) {
+        assert index >= 0 && index < tasks.size() : "Index out of bounds in TaskList.delete";
         return tasks.remove(index);
     }
 

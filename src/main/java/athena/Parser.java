@@ -12,6 +12,7 @@ public class Parser {
      * @return The first word of the input string.
      */
     public static String getCommandWord(String input) {
+        assert input != null : "Input to getCommandWord cannot be null";
         return input.trim().split(" ")[0];
     }
 
@@ -23,6 +24,8 @@ public class Parser {
      */
     public static int parseIndex(String input) {
         String[] parts = input.split(" ");
+        assert parts.length >= 2 : "parseIndex called on input without index argument";
+
         return Integer.parseInt(parts[1]) - 1;
     }
 
@@ -48,6 +51,8 @@ public class Parser {
      * @throws AthenaException If the /by keyword is missing or description is empty.
      */
     public static String[] parseDeadline(String input) throws AthenaException {
+        assert input.toLowerCase().startsWith("deadline") : "parseDeadline called on non-deadline command";
+
         int byIdx = input.indexOf(" /by ");
         if (byIdx == -1) {
             throw new AthenaException("A deadline must have a /by time.");
