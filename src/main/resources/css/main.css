@@ -21,6 +21,10 @@
     -fx-border-radius: 18;
     -fx-border-width: 2;
     -fx-font-size: 14px;
+
+    /* [AI-Assisted]: Gemini helped write the code to add this 3D elevation effect.
+       This makes the dialog bubbles appear to float over the background. */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 5);
 }
 
 .user-label {
@@ -33,10 +37,22 @@
     -fx-background-color: #4A0404;
     -fx-border-color: #CD7F32;
     -fx-text-fill: #FFD700;
+
+    /* [AI-Assisted]: Gemini helped write the code to add this bronze-tinted shadow.
+       It provides a unique 'glow' that differentiates Athena from the user. */
+    -fx-effect: dropshadow(three-pass-box, rgba(205, 127, 50, 0.4), 12, 0, 0, 5);
 }
 
 .button {
     -fx-background-color: #CD7F32;
     -fx-text-fill: black;
     -fx-font-weight: bold;
+}
+
+/* [AI-Assisted]: Gemini helped write the code to add this hover effect.
+   It provides interactive visual feedback when the user mouses over the button. */
+.button:hover {
+    -fx-background-color: #FFD700;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 215, 0, 0.5), 10, 0, 0, 0);
 }
