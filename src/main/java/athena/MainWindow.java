@@ -11,6 +11,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+/**
+ * Controller for the main GUI layout.
+ * Manages the layout of dialog boxes and processes user input events.
+ */
 public class MainWindow extends AnchorPane {
     @FXML
     private ScrollPane scrollPane;
@@ -26,12 +30,22 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
     private Image athenaImage = new Image(this.getClass().getResourceAsStream("/images/DaAthena.png"));
 
+    /**
+     * Initializes the controller after its root element has been processed.
+     * Binds the scroll pane and container widths for a responsive UI.
+     */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         dialogContainer.prefWidthProperty().bind(scrollPane.widthProperty());
     }
 
+    /**
+     * Connects the Athena engine to the GUI controller.
+     * Displays the initial greeting from Athena.
+     *
+     * @param a The Athena instance to be used as the logic engine.
+     */
     public void setAthena(Athena a) {
         assert a != null : "Athena engine was not initialized correctly";
 

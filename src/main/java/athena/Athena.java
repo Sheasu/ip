@@ -3,15 +3,27 @@ package athena;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+/**
+ * Represents the main engine of the Athena Spartan Task Manager.
+ * Orchestrates the interaction between storage, tasks, and user input.
+ */
 public class Athena {
     private final Storage storage;
     private TaskList tasks;
     private final Ui ui;
 
+    /**
+     * Initializes Athena with the default file path for the scrolls.
+     */
     public Athena() {
         this("./data/athena.txt");
     }
 
+    /**
+     * Initializes Athena with a specific file path for the scrolls.
+     *
+     * @param filePath The path to the text file where tasks are saved.
+     */
     public Athena(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -22,6 +34,13 @@ public class Athena {
         }
     }
 
+    /**
+     * Processes user input and returns a response from Athena.
+     * Handles various exceptions to provide graceful feedback to the user.
+     *
+     * @param input The raw user command string.
+     * @return A string response representing Athena's reply.
+     */
     public String getResponse(String input) {
         try {
             return executeCommand(input);
@@ -43,32 +62,23 @@ public class Athena {
         }
 
         switch (commandWord) {
-        case "bye":
-        case "b":
+        case "bye": case "b":
             return "Farewell! Your tasks are preserved in the scrolls.";
-        case "list":
-        case "l":
+        case "list": case "l":
             return handleList();
-        case "mark":
-        case "m":
+        case "mark": case "m":
             return handleMarkStatus(input, true);
-        case "unmark":
-        case "u":
+        case "unmark": case "u":
             return handleMarkStatus(input, false);
-        case "todo":
-        case "t":
+        case "todo": case "t":
             return handleTodo(input);
-        case "deadline":
-        case "d":
+        case "deadline": case "d":
             return handleDeadline(input);
-        case "event":
-        case "e":
+        case "event": case "e":
             return handleEvent(input);
-        case "delete":
-        case "del":
+        case "delete": case "del":
             return handleDelete(input);
-        case "find":
-        case "f":
+        case "find": case "f":
             return handleFind(input);
         default:
             throw new AthenaException("I do not recognize this command.");

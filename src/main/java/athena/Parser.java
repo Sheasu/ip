@@ -1,11 +1,20 @@
 package athena;
 
+/**
+ * Provides methods to parse raw user input into meaningful components.
+ */
 public class Parser {
     private static final String SPACE_DELIMITER = " ";
     private static final String BY_KEYWORD = " /by ";
     private static final String FROM_KEYWORD = " /from ";
     private static final String TO_KEYWORD = " /to ";
 
+    /**
+     * Extracts the command word from the user input.
+     *
+     * @param input Raw user input.
+     * @return The first word of the input in lowercase.
+     */
     public static String getCommandWord(String input) {
         return input.trim().split(SPACE_DELIMITER)[0];
     }
@@ -19,6 +28,13 @@ public class Parser {
         return trimmed.substring(firstSpace).trim();
     }
 
+    /**
+     * Parses the description for a Todo task.
+     *
+     * @param input Raw user input.
+     * @return The description of the Todo.
+     * @throws AthenaException If the description is empty.
+     */
     public static String parseTodoDescription(String input) throws AthenaException {
         String arguments = removeCommandWord(input);
         if (arguments.isEmpty()) {
@@ -27,6 +43,13 @@ public class Parser {
         return arguments;
     }
 
+    /**
+     * Parses the deadline command input.
+     *
+     * @param input Raw user input string.
+     * @return A string array containing the description and the deadline.
+     * @throws AthenaException If the /by keyword is missing.
+     */
     public static String[] parseDeadline(String input) throws AthenaException {
         String arguments = removeCommandWord(input);
         int byIdx = arguments.indexOf(BY_KEYWORD);
@@ -40,6 +63,13 @@ public class Parser {
         return new String[]{desc, by};
     }
 
+    /**
+     * Parses the event command input.
+     *
+     * @param input Raw user input string.
+     * @return A string array containing the description, start time, and end time.
+     * @throws AthenaException If /from or /to keywords are missing.
+     */
     public static String[] parseEvent(String input) throws AthenaException {
         String arguments = removeCommandWord(input);
         int fromIdx = arguments.indexOf(FROM_KEYWORD);
@@ -55,6 +85,13 @@ public class Parser {
         return new String[]{desc, from, to};
     }
 
+    /**
+     * Parses the find command input to extract the search keyword.
+     *
+     * @param input Raw user input string.
+     * @return The keyword provided by the user.
+     * @throws AthenaException If the keyword is missing.
+     */
     public static String parseFindKeyword(String input) throws AthenaException {
         String arguments = removeCommandWord(input);
         if (arguments.isEmpty()) {
@@ -63,6 +100,12 @@ public class Parser {
         return arguments;
     }
 
+    /**
+     * Extracts the index from a command (e.g., mark 1).
+     *
+     * @param input Raw user input.
+     * @return The zero-based integer index.
+     */
     public static int parseIndex(String input) {
         String arguments = removeCommandWord(input);
         return Integer.parseInt(arguments) - 1;

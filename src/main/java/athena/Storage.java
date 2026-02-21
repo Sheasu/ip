@@ -8,15 +8,31 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the loading and saving of task data to the local disk.
+ * Ensures the Spartan records persist across different sessions.
+ */
 public class Storage {
     private static final String DELIMITER = " \\| ";
     private static final String SAVE_DELIMITER = " | ";
     private final String filePath;
 
+    /**
+     * Initializes the Storage handler with a specific file path.
+     *
+     * @param filePath The location of the data file.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads tasks from the file system.
+     * If the file does not exist, returns an empty list.
+     *
+     * @return An ArrayList of tasks retrieved from the scrolls.
+     * @throws AthenaException If the file format is corrupted.
+     */
     public ArrayList<Task> load() throws AthenaException {
         File f = new File(filePath);
         if (!f.exists()) {
@@ -68,6 +84,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Saves the current phalanx of tasks into the persistent text file.
+     * Creates the necessary directories if they are missing.
+     *
+     * @param tasks The list of tasks to be archived.
+     */
     public void save(ArrayList<Task> tasks) {
         File f = new File(filePath);
         prepareDirectory(f);

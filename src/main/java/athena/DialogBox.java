@@ -2,6 +2,7 @@ package athena;
 
 import java.io.IOException;
 import java.util.Collections;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +15,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 
+/**
+ * Represents a dialog box consisting of an ImageView to represent the speaker's face
+ * and a label containing text from the speaker.
+ */
 public class DialogBox extends HBox {
     @FXML
     private Label dialog;
@@ -46,12 +51,26 @@ public class DialogBox extends HBox {
         setAlignment(Pos.TOP_LEFT);
     }
 
+    /**
+     * Creates a user dialog box.
+     *
+     * @param text The text to be displayed.
+     * @param img The avatar image of the user.
+     * @return A DialogBox configured for the user.
+     */
     public static DialogBox getUserDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.dialog.getStyleClass().add("user-label");
         return db;
     }
 
+    /**
+     * Creates an Athena dialog box, which is flipped so the image is on the left.
+     *
+     * @param text The text to be displayed.
+     * @param img The avatar image of Athena.
+     * @return A DialogBox configured for Athena.
+     */
     public static DialogBox getAthenaDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.flip();
