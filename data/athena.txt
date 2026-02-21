@@ -1,0 +1,4 @@
+T | 1 | polish the bronze shield
+D | 1 | finish the phalanx drill | 2026-02-28 0900
+E | 1 | Council of Elders meeting | 2pm | 5pm
+T | 1 | train with the spear
